@@ -1,0 +1,143 @@
+/* Importation de la police */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
+/* Reset général */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+/* Style du body */
+body {
+    background: linear-gradient(135deg, #74ebd5, #acb6e5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    text-align: center;
+    flex-direction: column;
+    padding-top: 60px;
+    /* Pour ne pas être caché sous le header */
+}
+
+/* Conteneur du formulaire */
+.container {
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    width: 400px;
+    animation: fadeIn 1s ease-in-out;
+}
+
+/* Animation d'apparition */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Titre principal */
+h1 {
+    font-size: 24px;
+    font-weight: 600;
+    margin-bottom: 15px;
+    color: #333;
+}
+
+/* Message d'erreur */
+.error {
+    color: red;
+    font-size: 14px;
+    margin-bottom: 15px;
+    background: rgba(255, 0, 0, 0.1);
+    padding: 8px;
+    border-radius: 5px;
+}
+
+/* Style du formulaire */
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    width: 100%;
+}
+
+/* Labels */
+label {
+    font-size: 14px;
+    font-weight: 500;
+    text-align: left;
+    color: #555;
+}
+
+/* Champs de saisie et textarea */
+input,
+textarea,
+select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 14px;
+    transition: 0.3s ease;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+    border-color: #4CAF50;
+    outline: none;
+    box-shadow: 0px 0px 5px rgba(76, 175, 80, 0.3);
+}
+
+/* Zone des options */
+#options-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* Boutons */
+button {
+    background: #4CAF50;
+    color: white;
+    border: none;
+    padding: 12px;
+    font-size: 16px;
+    font-weight: 500;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: 0.3s ease;
+}
+
+button:hover {
+    background: #45a049;
+    transform: scale(1.05);
+}
+
+/* Lien retour */
+p a {
+    color: #4CAF50;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+p a:hover {
+    text-decoration: underline;
+}
+
+/* Responsiveness */
+@media (max-width: 500px) {
+    .container {
+        width: 90%;
+    }
+}

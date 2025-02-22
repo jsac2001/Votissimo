@@ -84,24 +84,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="UTF-8">
     <title>Voter</title>
-    <style>
-        /* Simple styling for the sortable list */
-        #sortable-list {
-            list-style-type: none;
-            padding: 0;
-            width: 300px;
-        }
-        #sortable-list li {
-            padding: 8px;
-            margin: 4px;
-            background-color: #f0f0f0;
-            border: 1px solid #ccc;
-            cursor: move;
-        }
-        #sortable-list li button {
-            margin-left: 10px;
-        }
-    </style>
+    <link rel="stylesheet" href="assets/vote.css">
     <script>
         function loadOptions(scrutinId) {
             if (scrutinId) {
