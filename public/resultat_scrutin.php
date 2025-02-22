@@ -28,23 +28,72 @@ if (!$scrutin) {
     die("Scrutin introuvable.");
 }
 
-// Sélection de la méthode de calcul en fonction de l'algorithme du scrutin
-$methodUsed = ucfirst($scrutin['algorithm']); // Rendre la méthode lisible
-switch ($scrutin['algorithm']) {
-    case 'proportionnel':
-        $results = calculProportionnel($scrutinId, $db);
-        break;
-    case 'majoritaire':
-        $results = calculMajoritaire($scrutinId, $db);
-        break;
-    case 'condorcet':
-        $results = calculCondorcet($scrutinId, $db);
-        break;
-    default:
-        die("Algorithme inconnu.");
+$methodUsed = ucfirst($scrutin['algorithm']); // Méthode lisible
+
+// Calcul des résultats en fonction de l'algorithme du scrutin
+if ($scrutin['algorithm'] === 'condorcet') {
+    // Pour Condorcet, on utilise le champ vote_order pour récupérer l'ordre de classement
+    $query = "SELECT vote_order FROM votes WHERE scrutin_id = ? AND vote_method = 'condorcet'";
+    $stmt = $db->prepare($query);
+    $stmt->execute([$scrutinId]);
+    $votes = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    
+    $scores = [];
+    // Pour chaque vote, on attribue des points selon la position : 
+    // par exemple, si un vote contient "34,35,32,33" et qu'il y a 4 options,
+    // la première reçoit 4 points, la deuxième 3, etc.
+    foreach ($votes as $vote) {
+        $order = $vote['vote_order'];
+        if ($order) {
+            $ids = explode(',', $order);
+            $n = count($ids);
+            foreach ($ids as $index => $optionId) {
+                $points = $n - $index; // Top : n points, puis n-1, etc.
+                if (!isset($scores[$optionId])) {
+                    $scores[$optionId] = 0;
+                }
+                $scores[$optionId] += $points;
+            }
+        }
+    }
+    
+    // Récupérer les textes des options pour ce scrutin
+    $query = "SELECT id, option_text FROM options WHERE scrutin_id = ?";
+    $stmt = $db->prepare($query);
+    $stmt->execute([$scrutinId]);
+    $options = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $optionTexts = [];
+    foreach ($options as $opt) {
+        $optionTexts[$opt['id']] = $opt['option_text'];
+    }
+    
+    // Construire le tableau des résultats avec texte et score
+    $results = [];
+    foreach ($scores as $optionId => $score) {
+        $results[] = [
+            'option_text' => $optionTexts[$optionId] ?? "Option $optionId",
+            'score' => $score
+        ];
+    }
+    // Trier par score décroissant
+    usort($results, function($a, $b) {
+        return $b['score'] <=> $a['score'];
+    });
+} else {
+    // Pour les autres algorithmes, on appelle les fonctions existantes
+    switch ($scrutin['algorithm']) {
+        case 'proportionnel':
+            $results = calculProportionnel($scrutinId, $db);
+            break;
+        case 'majoritaire':
+            $results = calculMajoritaire($scrutinId, $db);
+            break;
+        default:
+            die("Algorithme inconnu.");
+    }
 }
 
-// Récupérer toutes les options disponibles pour ce scrutin avec les votes associés
+// Récupérer toutes les options disponibles pour ce scrutin avec le compte de votes associés
 $query = "SELECT o.option_text, COUNT(v.id) AS vote_count
           FROM options o
           LEFT JOIN votes v ON o.id = v.vote_data AND v.scrutin_id = ?
@@ -59,23 +108,19 @@ $allOptions = $stmt->fetchAll();
 $totalVotes = array_sum(array_column($allOptions, 'vote_count'));
 $noVotes = $totalVotes === 0;
 
-// Déterminer l'option gagnante
-$winningOption = !$noVotes && !empty($allOptions) ? $allOptions[0]['option_text'] : "Aucune option gagnante";
+// Déterminer l'option gagnante pour les autres méthodes
+$winningOption = (!$noVotes && !empty($allOptions)) ? $allOptions[0]['option_text'] : "Aucune option gagnante";
 ?>
 <!DOCTYPE html>
 <html lang="fr">
-
 <head>
     <meta charset="UTF-8">
     <title>Résultats du scrutin</title>
     <link rel="stylesheet" href="assets/style.css">
 </head>
-
 <body>
     <h1>Résultats du scrutin : <?= htmlspecialchars($scrutin['question']) ?></h1>
-    <p>Période de vote : du <?= htmlspecialchars($scrutin['date_debut']) ?> au
-        <?= htmlspecialchars($scrutin['date_fin']) ?>
-    </p>
+    <p>Période de vote : du <?= htmlspecialchars($scrutin['date_debut']) ?> au <?= htmlspecialchars($scrutin['date_fin']) ?></p>
     <p><strong>Méthode de calcul utilisée :</strong> <?= htmlspecialchars($methodUsed) ?></p>
 
     <?php if ($noVotes): ?>
@@ -112,5 +157,4 @@ $winningOption = !$noVotes && !empty($allOptions) ? $allOptions[0]['option_text'
 
     <p><a href="results.php">Retour à vos scrutins</a></p>
 </body>
-
 </html>
