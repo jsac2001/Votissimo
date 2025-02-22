@@ -3,13 +3,11 @@ session_start();
 ?>
 <!DOCTYPE html>
 <html lang="fr">
-
 <head>
     <meta charset="UTF-8">
     <title>Votissimo - Accueil</title>
     <link rel="stylesheet" href="assets/style.css">
 </head>
-
 <body>
     <header>
         <h1>Bienvenue sur Votissimo</h1>
@@ -21,14 +19,12 @@ session_start();
                 <li><a href="vote.php">Participer à un Scrutin</a></li>
                 <li><a href="results.php">Résultats</a></li>
                 <li><a href="admin.php">Administration</a></li>
-                <li><a href="logout.php">Déconnexion</a></li>
             </ul>
         </nav>
     </header>
     <main>
-        <p>Votissimo est une plateforme de vote en ligne qui vous permet de participer, créer et consulter des scrutins.
-        </p>
+        <p>Votissimo est une plateforme de vote en ligne qui vous permet de participer, créer et consulter des scrutins.</p>
     </main>
+    <footer><?php require_once __DIR__ . '/notification.php'; ?><footer>
 </body>
-
 </html>

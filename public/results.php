@@ -58,6 +58,6 @@ $scrutins = $stmt->fetchAll();
         </table>
     <?php endif; ?>
     <p><a href="index.php">Retour à l'accueil</a></p>
+    <footer><?php require_once __DIR__ . '/notification.php'; ?><footer>
 </body>
-
 </html>
