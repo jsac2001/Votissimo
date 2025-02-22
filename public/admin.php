@@ -2,25 +2,34 @@
 session_start();
 require_once __DIR__ . '/../vendor/autoload.php';
 
+use Votissimo\Database;
+
+// Vérifier si l'utilisateur est un administrateur
 if (!isset($_SESSION['user']) || $_SESSION['user']['role'] !== 'Administrateur') {
     header("Location: login.php");
     exit;
 }
 
-$scrutins = [
-    ['id' => 1, 'question' => 'Question 1', 'date_debut' => '2025-01-01', 'date_fin' => '2025-01-02'],
-    ['id' => 2, 'question' => 'Question 2', 'date_debut' => '2025-02-01', 'date_fin' => '2025-02-02']
-];
+$db = Database::getInstance()->getConnection();
+
+// Récupérer tous les scrutins
+$query = "SELECT id, question, date_debut, date_fin FROM scrutins ORDER BY date_fin DESC";
+$stmt = $db->prepare($query);
+$stmt->execute();
+$scrutins = $stmt->fetchAll();
 ?>
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <title>Votissimo - Administration</title>
     <link rel="stylesheet" href="assets/style.css">
 </head>
+
 <body>
     <h1>Interface d'Administration</h1>
+
     <h2>Liste des Scrutins</h2>
     <table border="1">
         <thead>
@@ -29,24 +38,52 @@ $scrutins = [
                 <th>Question</th>
                 <th>Date de début</th>
                 <th>Date de fin</th>
-                <th>Actions</th>
+                <th>Action</th>
             </tr>
         </thead>
-        <tbody>
+        <tbody id="scrutins-table">
             <?php foreach ($scrutins as $scrutin): ?>
-                <tr>
+                <tr id="scrutin-<?= $scrutin['id'] ?>">
                     <td><?= htmlspecialchars($scrutin['id']) ?></td>
                     <td><?= htmlspecialchars($scrutin['question']) ?></td>
                     <td><?= htmlspecialchars($scrutin['date_debut']) ?></td>
                     <td><?= htmlspecialchars($scrutin['date_fin']) ?></td>
                     <td>
-                        <a href="edit_scrutin.php?id=<?= $scrutin['id'] ?>">Modifier</a>
-                        <a href="delete_scrutin.php?id=<?= $scrutin['id'] ?>" onclick="return confirm('Supprimer ce scrutin ?');">Supprimer</a>
+                        <button onclick="deleteScrutin(<?= $scrutin['id'] ?>)">Supprimer</button>
                     </td>
                 </tr>
             <?php endforeach; ?>
         </tbody>
     </table>
+    <p><a href="create_scrutin.php">Créer un nouveau scrutin</a></p>
     <p><a href="index.php">Retour à l'accueil</a></p>
+
+    <script>
+        function deleteScrutin(scrutinId) {
+            if (!confirm('Supprimer ce scrutin ?')) return;
+
+            let formData = new FormData();
+            formData.append("id", scrutinId);
+
+            fetch('delete_scrutin.php', {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => response.json())
+                .then(data => {
+                    console.log("Réponse JSON :", data); // Debugging
+                    if (data.status === 'success') {
+                        document.getElementById('scrutin-' + scrutinId).remove();
+                        alert(data.message);
+                    } else {
+                        alert('Erreur : ' + data.message);
+                    }
+                })
+                .catch(error => console.error('Erreur réseau :', error));
+        }
+    </script>
+
+
 </body>
+
 </html>
