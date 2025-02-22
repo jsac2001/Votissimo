@@ -1,0 +1,42 @@
+# Ignore system files
+.DS_Store
+Thumbs.db
+
+# Ignore Composer dependencies (can be installed via `composer install`)
+vendor/
+
+# Ignore environment and configuration files
+config/config.php
+.env
+
+# Ignore log files
+logs/
+*.log
+
+# Ignore database files (if any)
+*.sqlite
+*.sql
+*.db
+
+# Ignore cache and temporary files
+cache/
+tmp/
+
+# Ignore compiled files
+*.pyc
+*.class
+*.o
+*.out
+
+# Ignore personal editor files
+.vscode/
+.idea/
+*.sublime-workspace
+*.sublime-project
+*.swp
+
+# Ignore compiled assets (if any are generated)
+public/assets/generated/
+
+# Ignore node_modules (if using Node.js for frontend)
+node_modules/

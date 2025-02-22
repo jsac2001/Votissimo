@@ -1,0 +1,23 @@
+{
+  "name": "juan-salvadoralcorta/votissimo",
+  "description": "Plateforme de gestion de scrutins Votissimo",
+  "type": "project",
+  "require": {
+    "php": ">=7.4",
+    "vlucas/phpdotenv": "^5.5",
+    "monolog/monolog": "^2.0"
+  },
+  "authors": [
+    {
+        "name": "Tom Monty & Juan-Salvador Alcorta"
+    }
+],
+  "require-dev": {
+    "phpunit/phpunit": "^9.5"
+  },
+  "autoload": {
+    "psr-4": {
+      "Votissimo\\": "src/"
+    }
+  }
+}
