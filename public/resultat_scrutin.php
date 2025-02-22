@@ -39,9 +39,7 @@ if ($scrutin['algorithm'] === 'condorcet') {
     $votes = $stmt->fetchAll(PDO::FETCH_ASSOC);
     
     $scores = [];
-    // Pour chaque vote, on attribue des points selon la position : 
-    // par exemple, si un vote contient "34,35,32,33" et qu'il y a 4 options,
-    // la première reçoit 4 points, la deuxième 3, etc.
+
     foreach ($votes as $vote) {
         $order = $vote['vote_order'];
         if ($order) {

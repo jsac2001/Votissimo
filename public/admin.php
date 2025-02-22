@@ -82,8 +82,6 @@ $scrutins = $stmt->fetchAll();
                 .catch(error => console.error('Erreur réseau :', error));
         }
     </script>
-
-
+    <footer><?php require_once __DIR__ . '/notification.php'; ?><footer>
 </body>
-
 </html>
